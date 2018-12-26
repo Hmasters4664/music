@@ -233,6 +233,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         try {
             // Set the data source to the mediaFile location
             mediaPlayer.setDataSource(activeAudio.getData());
+
         } catch (IOException e) {
             e.printStackTrace();
             stopSelf();
