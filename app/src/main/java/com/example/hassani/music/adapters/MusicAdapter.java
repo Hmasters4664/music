@@ -29,12 +29,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
     public MusicAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.music_card,parent,false);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                // item clicked
-
-            }
-        });
         return new MusicAdapter.ViewHolder(view);
     }
 
