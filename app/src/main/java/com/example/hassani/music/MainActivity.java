@@ -17,16 +17,20 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.hassani.music.adapters.MusicAdapter;
 import com.example.hassani.music.audioclass.audio;
 import com.example.hassani.music.datastorage.StorageUtil;
+import com.example.hassani.music.listeners.onItemClickListener;
 import com.example.hassani.music.service.MediaPlayerService;
+import com.example.hassani.music.touch.CTouchListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,15 +44,16 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayerService player;
     boolean serviceBound = false;
     private ArrayList<audio> audioList;
-    private Button playpause;
-    private Button fastdorward;
-    private Button Rewind;
+    private ImageButton  playpause;
+    private ImageButton fastdorward;
+    private ImageButton rewind;
     private MusicAdapter music;
     private RecyclerView mRecyclerview;
     private RecyclerView.LayoutManager mLayoutManager;
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
-    private static final String[] PERMISSION_STORE = new String[] {"android.permission.READ_EXTERNAL_STORAGE","Manifest.permission.READ_PHONE_STATE"};
-
+    public static final int REQUEST_ID2= 2;
+    private static final String[] PERM= new String[] {"Manifest.permission.READ_EXTERNAL_STORAGE","Manifest.permission.READ_PHONE_STATE"};
+    private static final String[] PERMISSION = new String[] {"Manifest.permission.READ_PHONE_STATE"};
 
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -74,13 +79,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(Build.VERSION.SDK_INT >=23 && !isPermissionGranted()){
-            requestPermissions(PERMISSION_STORE,0);
+        setContentView(R.layout.activity_main);
+        mRecyclerview=(RecyclerView)findViewById(R.id.recycler);
+        playpause=findViewById(R.id.btnPlay);
+        fastdorward=findViewById(R.id.btnForward);
+        rewind = findViewById(R.id.btnBackward);
+        mLayoutManager = new LinearLayoutManager(getBaseContext());
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M ){
+            checkAndRequestPermissions();
         }
 
-        setContentView(R.layout.activity_main);
 
-}
+    }
 
 
     private void playAudio(String media) {
@@ -140,18 +151,24 @@ public class MainActivity extends AppCompatActivity {
                 // Save to audioList
                 audioList.add(new audio(data, title, album, artist));
             }
-            audioList = new ArrayList<>();
+            //audioList = new ArrayList<>();
+
+
+        }   cursor.close();
+    }
+    private void initRecyclerView() {
+        if (audioList != null && audioList.size() > 0) {
+
             music = new MusicAdapter(audioList);
             mRecyclerview.setLayoutManager(mLayoutManager);
             mRecyclerview.setAdapter(music);
-            mRecyclerview.addOnItemTouchListener(new CustomTouchListener(this, new onItemClickListener() {
+            mRecyclerview.addOnItemTouchListener(new CTouchListener(this, new onItemClickListener() {
                 @Override
                 public void onClick(View view, int index) {
                     playAudio(index);
                 }
             }));
         }
-        cursor.close();
     }
 
     private void playAudio(int audioIndex) {
@@ -185,18 +202,90 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean isPermissionGranted(){
 
-        if((checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) && (checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
-                == PackageManager.PERMISSION_GRANTED) )
-        {
-            loadAudioList();
-            return true;
-        } else
-        {
-            return false;
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
         }
-
+        return true;
     }
+
+    private boolean checkAndRequestPermissions() {
+        if (SDK_INT >= Build.VERSION_CODES.M) {
+            int permissionReadPhoneState = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+            int permissionStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+            List<String> listPermissionsNeeded = new ArrayList<>();
+
+            if (permissionReadPhoneState != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
+            }
+
+            if (permissionStorage != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+
+            if (!listPermissionsNeeded.isEmpty()) {
+                ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        String TAG = "LOG_PERMISSION";
+        Log.d(TAG, "Permission callback called-------");
+        switch (requestCode) {
+            case REQUEST_ID_MULTIPLE_PERMISSIONS: {
+
+                Map<String, Integer> perms = new HashMap<>();
+                // Initialize the map with both permissions
+                perms.put(Manifest.permission.READ_PHONE_STATE, PackageManager.PERMISSION_GRANTED);
+                perms.put(Manifest.permission.READ_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                // Fill with actual results from user
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < permissions.length; i++)
+                        perms.put(permissions[i], grantResults[i]);
+                    // Check for both permissions
+
+                    if (perms.get(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                            && perms.get(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                        Log.d(TAG, "Phone state and storage permissions granted");
+                        // process the normal flow
+                        //else any one or both the permissions are not granted
+                        loadAudioList();
+                    } else {
+                        Log.d(TAG, "Some permissions are not granted ask again ");
+                        //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
+//                      //shouldShowRequestPermissionRationale will return true
+                        //show the dialog or snackbar saying its necessary and try again otherwise proceed with setup.
+
+                        }
+                        //permission is denied (and never ask again is  checked)
+                        //shouldShowRequestPermissionRationale will return false
+
+                            Toast.makeText(this, "Go to settings and enable permissions", Toast.LENGTH_LONG)
+                                    .show();
+                            //proceed with logic by disabling the related features or quit the app.
+                        }
+                    }
+                }
+            }
+
+
+
+
+
+
 }
