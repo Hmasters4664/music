@@ -10,20 +10,23 @@ import android.widget.TextView;
 import com.example.hassani.music.R;
 import com.example.hassani.music.audioclass.audio;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder>  {
 
-    public List<audio> aList;
-    private Context mContext;
+    public List<audio> aList= Collections.emptyList();;
+     Context mContext;
 
 
-    public MusicAdapter( List<audio> aList)
+    public MusicAdapter( List<audio> aList,Context context )
 
     {
         this.aList=aList;
+        this.mContext = context;
 
     }
+
 
     @Override
     public MusicAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -42,7 +45,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         holder.sName.setText(aList.get(position).getTitle());
         holder.aArtist.setText(aList.get(position).getArtist());
 
+        }
 
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
     }
 
     public class  ViewHolder extends RecyclerView.ViewHolder{
@@ -50,18 +57,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         View mView;
         public TextView sName;
         public TextView aArtist;
+
         public ViewHolder(View itemView) {
             super(itemView);
             mView=itemView;
             sName= (TextView) mView.findViewById(R.id.name);
             aArtist= (TextView) mView.findViewById(R.id.artist);
-            mView.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    Context context = mView.getContext();
-                    ////fill out on click
-                }
-            });
-
 
         }
     }

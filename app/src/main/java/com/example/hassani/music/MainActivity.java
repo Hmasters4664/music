@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -90,6 +91,10 @@ public class MainActivity extends AppCompatActivity {
             checkAndRequestPermissions();
         }
 
+        if (checkAndRequestPermissions()) {
+            loadAudioList();
+        }
+
 
     }
 
@@ -154,12 +159,13 @@ public class MainActivity extends AppCompatActivity {
             //audioList = new ArrayList<>();
 
 
+
         }   cursor.close();
     }
     private void initRecyclerView() {
         if (audioList != null && audioList.size() > 0) {
 
-            music = new MusicAdapter(audioList);
+            music = new MusicAdapter(audioList,getApplication());
             mRecyclerview.setLayoutManager(mLayoutManager);
             mRecyclerview.setAdapter(music);
             mRecyclerview.addOnItemTouchListener(new CTouchListener(this, new onItemClickListener() {
@@ -198,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadAudioList() {
         loadAudio();
+        initRecyclerView();
 
 
     }
@@ -270,11 +277,26 @@ public class MainActivity extends AppCompatActivity {
                         //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
 //                      //shouldShowRequestPermissionRationale will return true
                         //show the dialog or snackbar saying its necessary and try again otherwise proceed with setup.
-
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                                ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)) {
+                            showDialogOK("Phone state and storage permissions required for this app",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            switch (which) {
+                                                case DialogInterface.BUTTON_POSITIVE:
+                                                    checkAndRequestPermissions();
+                                                    break;
+                                                case DialogInterface.BUTTON_NEGATIVE:
+                                                    // proceed with logic by disabling the related features or quit the app.
+                                                    break;
+                                            }
+                                        }
+                                    });
                         }
                         //permission is denied (and never ask again is  checked)
                         //shouldShowRequestPermissionRationale will return false
-
+                        else {
                             Toast.makeText(this, "Go to settings and enable permissions", Toast.LENGTH_LONG)
                                     .show();
                             //proceed with logic by disabling the related features or quit the app.
@@ -282,6 +304,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+        }
+
+    }
+
+    private void showDialogOK(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", okListener)
+                .create()
+                .show();
+    }
+
 
 
 
