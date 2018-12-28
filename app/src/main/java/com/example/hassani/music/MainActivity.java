@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     public static final int REQUEST_ID2= 2;
+    boolean playing=false;
+    int AudIn=0;
     private static final String[] PERM= new String[] {"Manifest.permission.READ_EXTERNAL_STORAGE","Manifest.permission.READ_PHONE_STATE"};
     private static final String[] PERMISSION = new String[] {"Manifest.permission.READ_PHONE_STATE"};
 
@@ -87,6 +89,27 @@ public class MainActivity extends AppCompatActivity {
         rewind = findViewById(R.id.btnBackward);
         mLayoutManager = new LinearLayoutManager(getBaseContext());
 
+        playpause.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if((audioList != null && audioList.size() > 0 && serviceBound)) {
+                    if (!playing) {
+                        playAudio(AudIn);
+                        ImageButton b = (ImageButton) v;
+                        playing = true;
+                        b.setImageResource(R.drawable.ic_pause_circle_outline);
+                    }
+
+                    if (playing) {
+                        ImageButton b = (ImageButton) v;
+                        player.pauseMedia();
+                        playing = false;
+                        b.setImageResource(R.drawable.ic_play_circle_outline);
+                    }
+                }
+
+            }
+        });
+
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M ){
             checkAndRequestPermissions();
         }
@@ -101,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void playAudio(String media) {
         //Check is service is active
+        playing = true;
         if (!serviceBound) {
             Intent playerIntent = new Intent(this, MediaPlayerService.class);
             playerIntent.putExtra("media", media);
@@ -133,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         if (serviceBound) {
             unbindService(serviceConnection);
             //service is active
+            playing = false;
             player.stopSelf();
         }
     }
@@ -172,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view, int index) {
                     playAudio(index);
+                    playing = true;
+                    AudIn=index;
                 }
             }));
         }
@@ -179,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void playAudio(int audioIndex) {
         //Check is service is active
+        playing = true;
         if (!serviceBound) {
             //Store Serializable audioList to SharedPreferences
             StorageUtil storage = new StorageUtil(getApplicationContext());
