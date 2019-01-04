@@ -36,13 +36,10 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="56dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginStart="128dp"
+        android:layout_marginBottom="32dp"
         android:src="@drawable/ic_fast_rewind"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toStartOf="@+id/btnPlay"
-        app:layout_constraintHorizontal_bias="0.866"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
@@ -50,20 +47,22 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_alignTop="@+id/btnBackward"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="32dp"
         android:layout_toRightOf="@+id/btnBackward"
         android:src="@drawable/ic_play_circle_outline"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toStartOf="@+id/btnForward" />
+        app:layout_constraintEnd_toStartOf="@+id/btnForward"
+        app:layout_constraintStart_toEndOf="@+id/btnBackward" />
 
     <ImageButton
         android:id="@+id/btnForward"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="76dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="32dp"
         android:contentDescription="@+id/imageButton3"
         android:src="@drawable/ic_fast_forward"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"

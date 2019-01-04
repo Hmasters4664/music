@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     public static final int REQUEST_ID2= 2;
     boolean playing=false;
+    boolean firststart=false;
     int AudIn=0;
     private static final String[] PERM= new String[] {"Manifest.permission.READ_EXTERNAL_STORAGE","Manifest.permission.READ_PHONE_STATE"};
     private static final String[] PERMISSION = new String[] {"Manifest.permission.READ_PHONE_STATE"};
@@ -91,15 +92,25 @@ public class MainActivity extends AppCompatActivity {
 
         playpause.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if((audioList != null && audioList.size() > 0 && serviceBound)) {
-                    if (!playing) {
-                        playAudio(AudIn);
-                        ImageButton b = (ImageButton) v;
-                        playing = true;
-                        b.setImageResource(R.drawable.ic_pause_circle_outline);
-                    }
+                if((audioList != null && audioList.size() > 0)) {
 
-                    if (playing) {
+                    if (!playing) {
+
+                        if(!firststart)
+                        {
+                            playAudio(AudIn);
+                            ImageButton b = (ImageButton) v;
+                            playing = true;
+                            firststart=true;
+                            b.setImageResource(R.drawable.ic_pause_circle_outline);
+                        } else {
+                            player.resumeMedia();
+                            ImageButton b = (ImageButton) v;
+                            playing = true;
+                            b.setImageResource(R.drawable.ic_pause_circle_outline);
+                        }
+                    }
+                    else{
                         ImageButton b = (ImageButton) v;
                         player.pauseMedia();
                         playing = false;
@@ -125,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
     private void playAudio(String media) {
         //Check is service is active
         playing = true;
+        playpause.setImageResource(R.drawable.ic_pause_circle_outline);
+        firststart=true;
         if (!serviceBound) {
             Intent playerIntent = new Intent(this, MediaPlayerService.class);
             playerIntent.putExtra("media", media);
@@ -198,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view, int index) {
                     playAudio(index);
                     playing = true;
+                    firststart=true;
                     AudIn=index;
                 }
             }));
@@ -207,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
     private void playAudio(int audioIndex) {
         //Check is service is active
         playing = true;
+        playpause.setImageResource(R.drawable.ic_pause_circle_outline);
+        firststart=true;
         if (!serviceBound) {
             //Store Serializable audioList to SharedPreferences
             StorageUtil storage = new StorageUtil(getApplicationContext());
