@@ -596,7 +596,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     }
 
+    public int getCurrentPosition()
+    {
+        return mediaPlayer.getCurrentPosition();
 
+
+    }
+
+    public void seekTo(int progress){
+        mediaPlayer.seekTo(progress);
+    }
 
 
 

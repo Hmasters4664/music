@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.example.hassani.music.adapters.MusicAdapter;
@@ -47,15 +49,19 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<audio> audioList;
     private ImageButton  playpause;
     private ImageButton fastdorward;
+    private SeekBar mSeekBar;
     private ImageButton rewind;
     private MusicAdapter music;
     private RecyclerView mRecyclerview;
     private RecyclerView.LayoutManager mLayoutManager;
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     public static final int REQUEST_ID2= 2;
+    private com.example.hassani.music.customfonts.MyTextView_Roboto_Regular mDuration;
     boolean playing=false;
     boolean firststart=false;
-    int AudIn=0;
+    private Handler mSeekbarUpdateHandler = new Handler();
+   private int AudIn=0;
+    private Runnable mUpdateSeekbar;
     private static final String[] PERM= new String[] {"Manifest.permission.READ_EXTERNAL_STORAGE","Manifest.permission.READ_PHONE_STATE"};
     private static final String[] PERMISSION = new String[] {"Manifest.permission.READ_PHONE_STATE"};
 
@@ -88,7 +94,17 @@ public class MainActivity extends AppCompatActivity {
         playpause=findViewById(R.id.btnPlay);
         fastdorward=findViewById(R.id.btnForward);
         rewind = findViewById(R.id.btnBackward);
+        mSeekBar = findViewById(R.id.sBar);
         mLayoutManager = new LinearLayoutManager(getBaseContext());
+        mDuration =findViewById(R.id.duration);
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M ){
+            checkAndRequestPermissions();
+        }
+
+        if (checkAndRequestPermissions()) {
+            loadAudioList();
+        }
 
         playpause.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -99,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
                         if(!firststart)
                         {
                             playAudio(AudIn);
+                           // setDuration();
+                            mUpdateSeekbar.run();
                             ImageButton b = (ImageButton) v;
                             playing = true;
                             firststart=true;
@@ -121,13 +139,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M ){
-            checkAndRequestPermissions();
-        }
 
-        if (checkAndRequestPermissions()) {
-            loadAudioList();
-        }
+
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser)
+                    player.seekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        mUpdateSeekbar = new Runnable() {
+            @Override
+            public void run() {
+                if(serviceBound) {
+                    mSeekBar.setProgress(player.getCurrentPosition());
+                    mSeekbarUpdateHandler.postDelayed(this, 50);
+                }
+            }
+        };
+
+
+
 
 
     }
@@ -190,9 +234,9 @@ public class MainActivity extends AppCompatActivity {
                 String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
                 String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                 String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-
+                String duration = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
                 // Save to audioList
-                audioList.add(new audio(data, title, album, artist));
+                audioList.add(new audio(data, title, album, artist,duration));
             }
             //audioList = new ArrayList<>();
 
@@ -212,7 +256,10 @@ public class MainActivity extends AppCompatActivity {
                     playAudio(index);
                     playing = true;
                     firststart=true;
+                    //setDuration(index);
+                    mUpdateSeekbar.run();
                     AudIn=index;
+
                 }
             }));
         }
@@ -221,6 +268,8 @@ public class MainActivity extends AppCompatActivity {
     private void playAudio(int audioIndex) {
         //Check is service is active
         playing = true;
+        setDuration(audioIndex);
+        //
         playpause.setImageResource(R.drawable.ic_pause_circle_outline);
         firststart=true;
         if (!serviceBound) {
@@ -242,6 +291,8 @@ public class MainActivity extends AppCompatActivity {
             Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
             sendBroadcast(broadcastIntent);
         }
+
+
     }
 
 
@@ -361,6 +412,30 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+
+    private void setDuration(int index)
+    {
+        long miliseconds = Long.parseLong(audioList.get(index).getDuration());
+
+        int minutes = (int) (miliseconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((miliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        String secondsString;
+        String finalTimerString;
+
+        if (seconds < 10) {
+            secondsString = "0" + seconds;
+        } else {
+            secondsString = "" + seconds;
+        }
+
+        finalTimerString = minutes + ":" + secondsString;
+
+        mDuration.setText(finalTimerString);
+        mSeekBar.setMax((int) miliseconds);
+
+
+    }
 
 
 

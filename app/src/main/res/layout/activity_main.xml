@@ -28,6 +28,7 @@
             <com.example.hassani.music.customfonts.MyTextView_Roboto_Medium
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/current_song"
                 android:paddingLeft="28dp"
                 android:text="Look What You Made Me Do"
                 android:textColor="#ffffff"
@@ -36,6 +37,7 @@
 
             <com.example.hassani.music.customfonts.MyTextView_Roboto_Regular
                 android:layout_width="match_parent"
+                android:id="@+id/current_artist"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:paddingLeft="28dp"
@@ -83,6 +85,7 @@
 
                 <com.example.hassani.music.customfonts.MyTextView_Roboto_Regular
                     android:layout_width="match_parent"
+                    android:id="@+id/duration"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="end"
@@ -113,6 +116,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:paddingLeft="28dp"
+            android:background="#0000"
             android:src="@drawable/ic_repeat" />
 
         <ImageButton
@@ -121,6 +125,7 @@
             android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_weight="1"
+            android:background="#0000"
             android:paddingLeft="22dp"
             android:src="@drawable/ic_back" />
 
@@ -131,6 +136,7 @@
             android:layout_marginLeft="11dp"
             android:layout_marginRight="11dp"
             android:layout_weight="1"
+
             android:id="@+id/btnPlay"
             android:background="@drawable/circle"
             android:padding="15dp"
@@ -140,6 +146,7 @@
             android:layout_width="match_parent"
             android:id="@+id/btnForward"
             android:layout_height="20dp"
+            android:background="#0000"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:paddingRight="22dp"
@@ -150,6 +157,7 @@
             android:id="@+id/shuffle"
             android:layout_height="18dp"
             android:layout_gravity="center"
+            android:background="#0000"
             android:layout_marginRight="28dp"
             android:layout_weight="1"
             android:src="@drawable/ic_shuffle" />
