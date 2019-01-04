@@ -1,114 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:orientation="vertical"
+    tools:context="com.example.hassani.music.MainActivity">
 
-    <SeekBar
-        android:id="@+id/sBar"
-        android:layout_width="331dp"
-        android:layout_height="13dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnPlay"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <TextView
-        android:id="@+id/txtSongTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/sBar"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_toRightOf="@+id/btnForward"
-        android:text="0:00"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/sBar"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <ImageButton
-        android:id="@+id/btnBackward"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="128dp"
-        android:layout_marginBottom="32dp"
-        android:src="@drawable/ic_fast_rewind"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintStart_toStartOf="parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/btnPlay"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:layout_alignTop="@+id/btnBackward"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="32dp"
-        android:layout_toRightOf="@+id/btnBackward"
-        android:src="@drawable/ic_play_circle_outline"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toStartOf="@+id/btnForward"
-        app:layout_constraintStart_toEndOf="@+id/btnBackward" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/background"
+            android:orientation="vertical">
 
-    <ImageButton
-        android:id="@+id/btnForward"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="32dp"
-        android:contentDescription="@+id/imageButton3"
-        android:src="@drawable/ic_fast_forward"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sBar" />
+
+
+
+
+            <include layout="@layout/toolbar" />
+
+            <com.example.hassani.music.customfonts.MyTextView_Roboto_Medium
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="28dp"
+                android:text="Look What You Made Me Do"
+                android:textColor="#ffffff"
+                android:layout_marginTop="10dp"
+                android:textSize="17dp" />
+
+            <com.example.hassani.music.customfonts.MyTextView_Roboto_Regular
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:paddingLeft="28dp"
+                android:text="Taylor Swift"
+                android:textSize="13dp"
+                android:textColor="#ffffff" />
+
+            <com.example.hassani.music.customfonts.MyTextView_Roboto_Regular
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:paddingLeft="29dp"
+                android:text="826,122 plays"
+                android:textColor="#ffffff"
+                android:textSize="10dp" />
+
+            <SeekBar
+                android:layout_width="match_parent"
+                android:id="@+id/sBar"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:progressBackgroundTint="@color/white"
+                android:theme="@style/MySeekBarTheme"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="3dp"
+                android:orientation="horizontal">
+
+                <com.example.hassani.music.customfonts.MyTextView_Roboto_Regular
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="26dp"
+                    android:text="1:58"
+                    android:textColor="#ffffff"
+                    android:textSize="10dp" />
+
+                <com.example.hassani.music.customfonts.MyTextView_Roboto_Regular
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:paddingRight="26dp"
+                    android:text="3:12"
+                    android:textColor="#ffffff"
+                    android:textSize="10dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+    </FrameLayout>
+
+
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="369dp"
-        android:layout_height="193dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="17dp"
+        android:layout_marginTop="17dp"
+        android:orientation="horizontal">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler"
+        <ImageButton
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:id="@+id/repeat"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:paddingLeft="28dp"
+            android:src="@drawable/ic_repeat" />
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:id="@+id/btnBackward"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:paddingLeft="22dp"
+            android:src="@drawable/ic_back" />
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="11dp"
+            android:layout_marginRight="11dp"
+            android:layout_weight="1"
+            android:id="@+id/btnPlay"
+            android:background="@drawable/circle"
+            android:padding="15dp"
+            android:src="@drawable/ic_pause" />
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:id="@+id/btnForward"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:paddingRight="22dp"
+            android:src="@drawable/ic_forward" />
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:id="@+id/shuffle"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            android:layout_marginRight="28dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_shuffle" />
+
+
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="348dp"
-        android:layout_height="147dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="52dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/Viewline" />
 
-    <TextView
-        android:id="@+id/songName"
-        android:layout_width="72dp"
-        android:layout_height="29dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+</LinearLayout>
