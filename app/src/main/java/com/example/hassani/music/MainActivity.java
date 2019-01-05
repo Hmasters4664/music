@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     public static final int REQUEST_ID2= 2;
     private com.example.hassani.music.customfonts.MyTextView_Roboto_Regular mDuration;
+    private com.example.hassani.music.customfonts.MyTextView_Roboto_Regular mPassed;
     boolean playing=false;
     boolean firststart=false;
     private Handler mSeekbarUpdateHandler = new Handler();
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         mSeekBar = findViewById(R.id.sBar);
         mLayoutManager = new LinearLayoutManager(getBaseContext());
         mDuration =findViewById(R.id.duration);
+        mPassed = findViewById(R.id.passedd);
 
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M ){
             checkAndRequestPermissions();
@@ -120,25 +122,44 @@ public class MainActivity extends AppCompatActivity {
                             ImageButton b = (ImageButton) v;
                             playing = true;
                             firststart=true;
-                            b.setImageResource(R.drawable.ic_pause_circle_outline);
+                            //b.setImageResource(R.drawable.ic_pause_circle_outline);
                         } else {
                             player.resumeMedia();
                             ImageButton b = (ImageButton) v;
                             playing = true;
-                            b.setImageResource(R.drawable.ic_pause_circle_outline);
+                            b.setImageResource(R.drawable.ic_pause);
                         }
                     }
                     else{
                         ImageButton b = (ImageButton) v;
                         player.pauseMedia();
                         playing = false;
-                        b.setImageResource(R.drawable.ic_play_circle_outline);
+                        b.setImageResource(R.drawable.ic_play);
                     }
                 }
 
             }
         });
 
+        fastdorward.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if((audioList != null && audioList.size() > 0 && serviceBound)) {
+                    player.skipToNext();
+
+                }
+
+            }
+        });
+
+        rewind.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if((audioList != null && audioList.size() > 0 && serviceBound)) {
+                    player.skipToPrevious();
+
+                }
+
+            }
+        });
 
 
 
@@ -163,10 +184,13 @@ public class MainActivity extends AppCompatActivity {
         mUpdateSeekbar = new Runnable() {
             @Override
             public void run() {
+
                 if(serviceBound) {
                     mSeekBar.setProgress(player.getCurrentPosition());
-                    mSeekbarUpdateHandler.postDelayed(this, 50);
+                    updateDuration(player.getCurrentPosition());
+
                 }
+                mSeekbarUpdateHandler.postDelayed(this, 50);
             }
         };
 
@@ -255,9 +279,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view, int index) {
                     playAudio(index);
                     playing = true;
-                    firststart=true;
-                    //setDuration(index);
                     mUpdateSeekbar.run();
+                    firststart=true;
                     AudIn=index;
 
                 }
@@ -269,8 +292,9 @@ public class MainActivity extends AppCompatActivity {
         //Check is service is active
         playing = true;
         setDuration(audioIndex);
+        mUpdateSeekbar.run();
         //
-        playpause.setImageResource(R.drawable.ic_pause_circle_outline);
+        playpause.setImageResource(R.drawable.ic_pause);
         firststart=true;
         if (!serviceBound) {
             //Store Serializable audioList to SharedPreferences
@@ -433,6 +457,29 @@ public class MainActivity extends AppCompatActivity {
 
         mDuration.setText(finalTimerString);
         mSeekBar.setMax((int) miliseconds);
+
+
+    }
+
+    private void updateDuration(int miliseconds)
+    {
+
+
+        int minutes = (int) (miliseconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((miliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+
+        String secondsString;
+        String finalTimerString;
+
+        if (seconds < 10) {
+            secondsString = "0" + seconds;
+        } else {
+            secondsString = "" + seconds;
+        }
+
+        finalTimerString = minutes + ":" + secondsString;
+
+        mPassed.setText(finalTimerString);
 
 
     }

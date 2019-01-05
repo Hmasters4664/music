@@ -76,6 +76,7 @@
 
                 <com.example.hassani.music.customfonts.MyTextView_Roboto_Regular
                     android:layout_width="match_parent"
+                    android:id="@+id/passedd"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:paddingLeft="26dp"
@@ -112,12 +113,12 @@
         <ImageButton
             android:layout_width="match_parent"
             android:id="@+id/repeat"
-            android:layout_height="18dp"
+            android:layout_height="35dp"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:paddingLeft="28dp"
             android:background="#0000"
-            android:src="@drawable/ic_repeat" />
+            android:src="@drawable/ic_repeat_clear" />
 
         <ImageButton
             android:layout_width="match_parent"
@@ -140,7 +141,7 @@
             android:id="@+id/btnPlay"
             android:background="@drawable/circle"
             android:padding="15dp"
-            android:src="@drawable/ic_pause" />
+            android:src="@drawable/ic_play" />
 
         <ImageButton
             android:layout_width="match_parent"
@@ -155,12 +156,12 @@
         <ImageButton
             android:layout_width="match_parent"
             android:id="@+id/shuffle"
-            android:layout_height="18dp"
+            android:layout_height="35dp"
             android:layout_gravity="center"
             android:background="#0000"
             android:layout_marginRight="28dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_shuffle" />
+            android:src="@drawable/ic_shuffle_clear" />
 
 
     </LinearLayout>
