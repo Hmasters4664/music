@@ -100,15 +100,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public void onCreate() {
         super.onCreate();
-        // Perform one-time setup procedures
 
-        // Manage incoming phone calls during playback.
-        // Pause MediaPlayer on incoming call,
-        // Resume on hangup.
         callStateListener();
-        //ACTION_AUDIO_BECOMING_NOISY -- change in audio outputs -- BroadcastReceiver
+
         registerBecomingNoisyReceiver();
-        //Listen for new Audio to play -- BroadcastReceiver
+
         register_playNewAudio();
     }
 
@@ -119,13 +115,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        //Invoked indicating buffering status of
-        //a media resource being streamed over the network.
+
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        //Invoked when playback of a media source has completed.
+
         stopMedia();
 
         stopSelf();
@@ -176,20 +171,17 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 mediaPlayer.setVolume(1.0f, 1.0f);
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
-                // Lost focus for an unbounded amount of time: stop playback and release media player
+
                 if (mediaPlayer.isPlaying()) mediaPlayer.stop();
                 mediaPlayer.release();
                 mediaPlayer = null;
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                // Lost focus for a short time, but we have to stop
-                // playback. We don't release the media player because playback
-                // is likely to resume
+
                 if (mediaPlayer.isPlaying()) mediaPlayer.pause();
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                // Lost focus for a short time, but it's ok to keep playing
-                // at an attenuated level
+
                 if (mediaPlayer.isPlaying()) mediaPlayer.setVolume(0.1f, 0.1f);
                 break;
         }
@@ -199,10 +191,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            //Focus gained
+
             return true;
         }
-        //Could not gain focus
+
         return false;
     }
 
@@ -305,7 +297,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             buildNotification(PlaybackStatus.PLAYING);
         }
 
-        //Handle Intent action from MediaSession.TransportControls
+
         handleIncomingActions(intent);
         return super.onStartCommand(intent, flags, startId);
     }
@@ -318,38 +310,37 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             mediaPlayer.release();
         }
         removeAudioFocus();
-        //Disable the PhoneStateListener
+
         if (phoneStateListener != null) {
             telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
         }
 
         removeNotification();
 
-        //unregister BroadcastReceivers
+
         unregisterReceiver(becomingNoisyReceiver);
         unregisterReceiver(playNewAudio);
 
-        //clear cached playlist
+
         new StorageUtil(getApplicationContext()).clearCachedAudioPlaylist();
     }
 
     private void registerBecomingNoisyReceiver() {
-        //register after getting audio focus
+
         IntentFilter intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         registerReceiver(becomingNoisyReceiver, intentFilter);
     }
 
 
     private void callStateListener() {
-        // Get the telephony manager
+
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        //Starting listening for PhoneState changes
+
         phoneStateListener = new PhoneStateListener() {
             @Override
             public void onCallStateChanged(int state, String incomingNumber) {
                 switch (state) {
-                    //if at least one call exists or the phone is ringing
-                    //pause the MediaPlayer
+
                     case TelephonyManager.CALL_STATE_OFFHOOK:
                     case TelephonyManager.CALL_STATE_RINGING:
                         if (mediaPlayer != null) {
@@ -369,14 +360,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 }
             }
         };
-        // Register the listener with the telephony manager
-        // Listen for changes to the device call state.
+
         telephonyManager.listen(phoneStateListener,
                 PhoneStateListener.LISTEN_CALL_STATE);
     }
 
     private void register_playNewAudio() {
-        //Register playNewMedia receiver
+
         IntentFilter filter = new IntentFilter(MainActivity.Broadcast_PLAY_NEW_AUDIO);
         registerReceiver(playNewAudio, filter);
     }
@@ -386,20 +376,19 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         if (mediaSessionManager != null) return; //mediaSessionManager exists
 
         mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-        // Create a new MediaSession
+
         mediaSession = new MediaSessionCompat(getApplicationContext(), "AudioPlayer");
-        //Get MediaSessions transport controls
+
         transportControls = mediaSession.getController().getTransportControls();
-        //set MediaSession -> ready to receive media commands
+
         mediaSession.setActive(true);
-        //indicate that the MediaSession handles transport control commands
-        // through its MediaSessionCompat.Callback.
+
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
-        //Set mediaSession's MetaData
+
         updateMetaData();
 
-        // Attach Callback to receive MediaSession updates
+
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
             // Implement callbacks
             @Override
@@ -505,14 +494,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         int notificationAction = android.R.drawable.ic_media_pause;//needs to be initialized
         PendingIntent play_pauseAction = null;
 
-        //Build a new notification according to the current state of the MediaPlayer
+
         if (playbackStatus == PlaybackStatus.PLAYING) {
             notificationAction = android.R.drawable.ic_media_pause;
-            //create the pause action
+
             play_pauseAction = playbackAction(1);
         } else if (playbackStatus == PlaybackStatus.PAUSED) {
             notificationAction = android.R.drawable.ic_media_play;
-            //create the play action
+
             play_pauseAction = playbackAction(0);
         }
 
